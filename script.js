@@ -63,7 +63,7 @@ const locations = [
     {
         name: "Killed Monster",
         "buttontext":["Go to Town Square", "Go to Town Square", "Go to Town Square"],
-        "buttonfunc" :[Gotown, Gotown, Gotown],
+        "buttonfunc" :[Gotown, Gotown, easteregg],
         text: "Monster Screams aaaahhhhh... and Dies. You Gain Experience and Find Gold"
     },
     {
@@ -77,6 +77,12 @@ const locations = [
         "buttontext":["Replay?", "Replay?", "Replay?"],
         "buttonfunc" :[restart, restart, restart],
         text: "You DEFEATED THE DRAGON YOU WON."
+    },
+    {
+        name: "Easter Egg",
+        "buttontext":["2", "8", "Go to Town Square?"],
+        "buttonfunc" :[pick2, pick8, Gotown],
+        text: "Yo found a Secret Game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
     }
     
 ];
@@ -187,18 +193,38 @@ function gofight(){
 }
 function attack(){
     text.innerText = "The " + monsters[fighting].name + " attack.";
-    text.innerText += "You attack it with your" + weapons[currentWeapon].name + ".";
-    health -= monsters[fighting].level;
-    healthText.innerText = health
+    text.innerText += "You attack it with your " + weapons[currentWeapon].name + ".";
+    if(isMonsterHit() || health<20){
+        health -= getMonsterattackdmg(monsters[fighting].level);
+    }
+    else{
+        text.innerText += "You Miss";
+    }
     monsterhealth -= weapons[currentWeapon].power + Math.floor(Math.random()*xp)+1;
     monsterHealthText.innerText = monsterhealth;
+    healthText.innerText = health
     if(health<=0){
         lose();
     }
     else if(monsterhealth<=0){
         (fighting===2)?wingame():win();
     }
+    if(Math.random()<=.1 || inventory.length!==1){
+        text.innerText += "Your" + inventory.pop() + "broke."
+        currentWeapon--;
+    }
 }
+
+function getMonsterattackdmg(level){
+    let hit = (level*5) - (Math.floor(Math.random()*xp));
+    console.log(hit);
+    return hit;
+}
+
+function isMonsterHit(){
+    return Math.random() > 0.2;
+}
+
 function dodge(){
     text.innerText = "You dodged the attack from the " + monsters[fighting].name + ".";
 }
@@ -225,4 +251,36 @@ function restart(){
     inventory = ['stick']
     currentWeapon = 0
     Gotown();
+}
+
+function easteregg(){
+    update(locations[7]);
+}
+
+function pick2(){
+    pick(2);
+}
+function pick8(){
+    pick(8);
+}
+function pick(guess){
+    let numbers = [];
+    while(numbers.length<10){
+        numbers.push(Math.floor(Math.random()*10))
+    }
+    text.innerText = "You picked " + guess + ". Here are the random numbers: \n";
+    for(let i=0;i<10;i++){
+        text.innerText += numbers[i] + "\n";
+    }
+    if(numbers.indexOf(guess) !== -1){
+        text.innerText +="Right ! You win 20 gold";
+        gold+=20
+        goldText.innerText = gold
+    }
+    else{
+        text.innerText +="Wrong ! You lose 10 health";
+        health-=20
+        healthText.innerText = health
+
+    }
 }
