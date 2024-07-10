@@ -134,7 +134,7 @@ function Gethealth(){
     }
 }
 function GetWeapon(){
-    if(currentWeapon<weapons.length){
+    if(currentWeapon<weapons.length-1){
         if(gold>=30){
             gold-=30;
             goldText.innerText = gold;
@@ -145,7 +145,7 @@ function GetWeapon(){
             text.innerText += "In your inventory you have: " + inventory;
         }
         else{
-            text.innerText = "Not enough Gold";
+            text.innerText = "Not enough Gold.";
         }
     }
     else{
